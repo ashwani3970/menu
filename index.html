@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+    <script src="script.js"></script>
+</head>
+
+<body>
+    <div id="main">
+        <h1>Restaurant</h1>
+    </div>
+    <div>
+        <ul class="nav">
+            <li>Home</li>
+            <li>Menu</li>
+            <li onclick="document.getElementById('id02').style.display='block'" style="width:auto;">Update Menu</li>
+            <li>About Us</li>
+            <li style="display:none;">Log Out</li>
+            <li onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</li>
+        </ul>
+    </div>
+    <!-- Login Form design -->
+    <div id="id01" class="modal animate">
+        <form class="login animate">
+            <div>
+                <span onclick="document.getElementById('id01').style.display='none'" class="close"
+                    title="Close Log-In Form">&times;</span>
+            </div>
+            <div class="header">
+                <span>Log-In Form</span>
+            </div>
+            <div class="email">
+                <label for="email">Email Id</label>
+                <input type="email" id="email" placeholder="Enter your email Id here">
+            </div>
+            <div class="pwd">
+                <label for="pwd">Password</label>
+                <input type="password" id="pwd" placeholder="Enter your password here">
+            </div>
+            <div>
+                <button class="submit">Login</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Menu Update Form design -->
+    <div id="id02" class="modal animate">
+        <form id="update" class="menu-update animate">
+            <div>
+                <span onclick="document.getElementById('id02').style.display='none'" class="close"
+                    title="Close Menu-update Form">&times;</span>
+            </div>
+            <div class="header">
+                <span>Menu Update Form</span>
+            </div>
+            <div class="item">
+                <label for="item">Item Name</label>
+                <input type="text" name="item" id="item" placeholder="Enter your item name here">
+            </div>
+            <div class="price">
+                <label for="price">Item Price</label>
+                <input type="number" name="price" id="price" placeholder="Enter item price here">
+            </div>
+            <!-- <div class="category">
+                <label for="category">Item Category</label>
+                <select id="category" placeholder="Select Item Category">
+                    <option>Select Category</option>
+                    <option>Appetiser</option>
+                    <option>Beverages</option>
+                    <option>Main Course</option>
+                    <option>Dessert</option>
+                </select>
+            </div> -->
+
+            <div>
+                <button>Update Item</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Menu Table design -->
+    <div>
+        <table id="menu-table" class="menu animate">
+
+            <thead>
+                <th>Item name</th>
+                <th>Item Price</th>
+            </thead>
+
+        </table>
+    </div>
+    <div>
+        <ul id="menu-list">
+
+        </ul>
+
+    </div>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyA4Vc1ksOj2yfqox6-iciQK59eLhniLK5Q",
+            authDomain: "menu-ce79e.firebaseapp.com",
+            databaseURL: "https://menu-ce79e.firebaseio.com",
+            projectId: "menu-ce79e",
+            storageBucket: "menu-ce79e.appspot.com",
+            messagingSenderId: "662765414374",
+            appId: "1:662765414374:web:bd70b8ac052028fa8b1827",
+            measurementId: "G-NQ8JDHWTKR"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+
+
+        db.collection('MenuItems').get().then((snapshot) => {
+            snapshot.docs.forEach(doc => {
+                rendermenulist(doc);
+            });
+        });
+
+        const menulist = document.querySelector('#menu-table');
+        const updateform = document.querySelector('#update');
+
+        function rendermenulist(doc) {
+            let tr = document.createElement('tr');
+            let name = document.createElement('td');
+            let price = document.createElement('td');
+            //let cross =document.createElement('div');
+
+            tr.setAttribute('data-id', doc.id);
+            name.textContent = doc.data().name;
+            price.textContent = doc.data().price;
+            //cross.textContent = 'x';
+
+            tr.appendChild(name);
+            tr.appendChild(price);
+            //li.appendChild(cross);
+            menulist.appendChild(tr);
+
+            // cross.addEventListener('click',(e)=>{
+            //     e.stopPropagation();
+            //     let id = e.target.parentElement.getAttribute('data-id');
+            //     db.collection('MenuItems').doc(id).delete();
+            // })
+        }
+
+        updateform.addEventListener('submit', (e) => {
+            e.preventDefault();
+            db.collection('MenuItems').add({
+                name: updateform.item.value,
+                price: updateform.price.value
+            });
+            updateform.item.value = '';
+            updateform.price.value = '';
+    
+        })
+
+
+    </script>
+
+</body>
+
+</html>
